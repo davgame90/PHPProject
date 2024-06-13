@@ -1,0 +1,42 @@
+{# templates/event/create.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un événement{% endblock %}
+
+{% block body %}
+<div>
+    <h1 class="text-center mb-4">Créer un événement</h1>
+    <div>
+        <div>
+            {{ form_start(eventForm) }}
+                <div class="form-group">
+                    {{ form_label(eventForm.title) }}
+                    {{ form_widget(eventForm.title, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(eventForm.title) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(eventForm.description) }}
+                    {{ form_widget(eventForm.description, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(eventForm.description) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(eventForm.date) }}
+                    {{ form_widget(eventForm.date, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(eventForm.date) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(eventForm.maxParticipants) }}
+                    {{ form_widget(eventForm.maxParticipants, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(eventForm.maxParticipants) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(eventForm.isPublic) }}
+                    {{ form_widget(eventForm.isPublic, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(eventForm.isPublic) }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Créer l'évènement</button>
+            {{ form_end(eventForm) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

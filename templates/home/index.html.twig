@@ -11,44 +11,22 @@
 </header>
 
 <section class="container my-5">
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Accueil</h2>
-            <p>Vue générale des événements disponibles.</p>
-        </div>
-        <div class="col-md-4">
-            <h2>Créer Événement</h2>
-            <p>Formulaire de création d’événements.</p>
-        </div>
-        <div class="col-md-4">
-            <h2>Liste des Événements</h2>
-            <p>Vue listant tous les événements avec options de filtrage.</p>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <h2>Inscriptions</h2>
-            <p>Liste des événements auxquels l'utilisateur est inscrit.</p>
-        </div>
-        <div class="col-md-4">
-            <h2>Inscription</h2>
-            <p>Créez un compte pour accéder à toutes les fonctionnalités.</p>
-        </div>
-        <div class="col-md-4">
-            <h2>Connexion</h2>
-            <p>Connectez-vous pour gérer vos événements.</p>
-        </div>
-    </div>
+    <h2 class="mb-4">Liste des événements publics</h2>
+
+    {% if publicEvents is not empty %}
+        {% for event in publicEvents %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <p class="card-text">{{ event.description }}</p>
+                    <p class="card-text">Date: {{ event.date|date('d/m/Y H:i') }}</p>
+                    <p class="card-text">Max Participants: {{ event.maxParticipants }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aucun événement public trouvé.</p>
+    {% endif %}
 </section>
 
-<section class="container-fluid bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h2>Pourquoi utiliser notre site ?</h2>
-                <p>Nous offrons une solution complète et intuitive pour la gestion de vos événements, avec des fonctionnalités modernes et un support dédié.</p>
-            </div>
-        </div>
-    </div>
-</section>
 {% endblock %}

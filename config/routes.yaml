@@ -1,27 +1,9 @@
 controllers:
-    resource: '../src/Controller/'
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
     type: attribute
 
-home:
+index:
     path: /
-    controller: App\Controller\HomeController::index
-
-event_create:
-    path: /create-event
-    controller: App\Controller\EventController::create
-
-event_list:
-    path: /events
-    controller: App\Controller\EventController::list
-
-user_registrations:
-    path: /registrations
-    controller: App\Controller\UserController::registrations
-
-register:
-    path: /register
-    controller: App\Controller\RegistrationController::register
-
-login:
-    path: /login
-    controller: App\Controller\SecurityController::login
+    controller: App\Controller\HomeController::home
