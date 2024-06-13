@@ -20,7 +20,7 @@ class ProfileController extends AbstractController
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             if ($form->get('plainPassword')->getData()) {
                 $user->setPassword(
                     $passwordHasher->hashPassword(
