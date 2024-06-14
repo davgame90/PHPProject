@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des événements{% endblock %}
+
+{% block body %}
+    <h1>Liste des événements</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Places restantes</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.date|date('Y-m-d H:i') }}</td>
+                    <td>{{ event.maxParticipants - event.participants|length }}</td>
+                    <td>
+                        {% if is_granted('ROLE_USER') %}
+                            {% if event.isUserRegistered(app.user) %}
+                                <form action="{{ path('event_unregister', {'id': event.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('unregister' ~ event.id) }}">
+                                    <button class="btn btn-danger">Se désinscrire</button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('event_register', {'id': event.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('register' ~ event.id) }}">
+                                    <button class="btn btn-primary">S'inscrire</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{{ path('event_update', {'id': event.id}) }}" class="btn btn-secondary">Modifier</a>
+                        <form action="{{ path('event_delete', {'id': event.id}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                            <button class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

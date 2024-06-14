@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\EventRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -34,6 +36,20 @@ class Event
     #[ORM\Column(type: "boolean")]
     #[Assert\NotBlank(message: "Veuillez indiquer si l'événement est public")]
     private $isPublic;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
+    private $participants;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private $owner;
+
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -99,4 +115,50 @@ class Event
 
         return $this;
     }
+
+        /**
+     * @return Collection|User[]
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(User $user): bool
+    {
+        if ($this->participants->contains($user)) {
+            return false;
+        }
+
+        $this->participants[] = $user;
+        return true;
+    }
+
+    public function removeParticipant(User $user): bool
+    {
+        if (!$this->participants->contains($user)) {
+            return false;
+        }
+
+        $this->participants->removeElement($user);
+        return true;
+    }
+
+    public function isUserRegistered(User $user): bool
+    {
+        return $this->participants->contains($user);
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
 }

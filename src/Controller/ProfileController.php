@@ -26,18 +26,20 @@ class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            if ($form->get('plainPassword')->getData()) {
-                $user->setPassword(
-                    $passwordHasher->hashPassword(
-                        $user,
-                        $form->get('plainPassword')->getData()
-                    )
-                );
+            if($form->isValid()){
+                if ($form->get('plainPassword')->getData()) {
+                    $user->setPassword(
+                        $passwordHasher->hashPassword(
+                            $user,
+                            $form->get('plainPassword')->getData()
+                        )
+                    );
+                }
+
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_profile');
             }
-
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_profile');
         }
 
         return $this->render('profile/profile.html.twig', [

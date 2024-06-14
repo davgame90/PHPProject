@@ -29,6 +29,11 @@ security:
         - { path: ^/register}
         - { path: ^/login}
         - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/create-event, roles: ROLE_USER }
+        - { path: ^/list-events, roles: ROLE_USER }
+        - { path: ^/registrations, roles: ROLE_USER }
+
+
 
 
 when@test:

@@ -21,17 +21,19 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $user->setPassword(
-                $passwordHasher->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+            if($form->isValid()){
+                $user->setPassword(
+                    $passwordHasher->hashPassword(
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-            return $this->redirectToRoute('app_login');
+                return $this->redirectToRoute('app_login');
+            }
         }
 
         return $this->render('registration/register.html.twig', [

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Inscriptions{% endblock %}
+
+{% block body %}
+    <h1>Mes Inscriptions</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Places restantes</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.date|date('Y-m-d H:i') }}</td>
+                    <td>{{ event.maxParticipants - event.participants|length }}</td>
+                    <td>
+                        {% if event.isUserRegistered(app.user) %}
+                            <form action="{{ path('event_unregister', {'id': event.id}) }}" method="post">
+                                <input type="hidden" name="_token" value="{{ csrf_token('unregister' ~ event.id) }}">
+                                <button class="btn btn-danger">Se désinscrire</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
