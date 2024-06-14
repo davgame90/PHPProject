@@ -10,6 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+
 
 class EventController extends AbstractController
 {
@@ -21,6 +24,7 @@ class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $event->setOwner($this->getUser());
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -87,24 +91,42 @@ class EventController extends AbstractController
     }
 
     #[Route('/register-event/{id}', name: 'event_register', methods: ['POST'])]
-    public function register(Request $request, EntityManagerInterface $entityManager, Event $event): Response
+    public function register(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, Event $event): Response
     {
         $user = $this->getUser();
+
         if ($event->addParticipant($user)) {
             $entityManager->persist($event);
             $entityManager->flush();
+
+            $email = (new Email())
+                ->from('monnier.david15@gmail.com')
+                ->to("monnier.david15@gmail.com")
+                ->subject('Inscription à l\'événement')
+                ->text(sprintf('Vous êtes inscrit à l\'événement "%s" prévu le %s.', $event->getTitle(), $event->getDate()->format('Y-m-d H:i')));
+
+            $mailer->send($email);
         }
 
         return $this->redirectToRoute('event_list');
     }
 
     #[Route('/unregister-event/{id}', name: 'event_unregister', methods: ['POST'])]
-    public function unregister(Request $request, EntityManagerInterface $entityManager, Event $event): Response
+    public function unregister(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, Event $event): Response
     {
         $user = $this->getUser();
         if ($event->removeParticipant($user)) {
             $entityManager->persist($event);
             $entityManager->flush();
+
+            // Send unregistration email
+            $email = (new Email())
+                ->from('monnier.david15@gmail.com')
+                ->to("monnier.david15@gmail.com")
+                ->subject('Désinscription de l\'événement')
+                ->text(sprintf('Vous êtes désinscrit de l\'événement "%s" prévu le %s.', $event->getTitle(), $event->getDate()->format('Y-m-d H:i')));
+
+            $mailer->send($email);
         }
 
         return $this->redirectToRoute('event_list');
