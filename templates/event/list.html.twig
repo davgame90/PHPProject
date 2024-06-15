@@ -1,50 +1,70 @@
+{# templates/event/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des événements{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+{% endblock %}
+
 {% block body %}
-    <h1>Liste des événements</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Date</th>
-                <th>Places restantes</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Liste des événements</h1>
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>{{ event.title }}</td>
-                    <td>{{ event.description }}</td>
-                    <td>{{ event.date|date('Y-m-d H:i') }}</td>
-                    <td>{{ event.maxParticipants - event.participants|length }}</td>
-                    <td>
-                        {% if is_granted('ROLE_USER') %}
-                            {% if event.isUserRegistered(app.user) %}
-                                <form action="{{ path('event_unregister', {'id': event.id}) }}" method="post">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('unregister' ~ event.id) }}">
-                                    <button class="btn btn-danger">Se désinscrire</button>
-                                </form>
-                            {% else %}
-                                <form action="{{ path('event_register', {'id': event.id}) }}" method="post">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('register' ~ event.id) }}">
-                                    <button class="btn btn-primary">S'inscrire</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                        {% if event.owner == app.user %}
-                            <a href="{{ path('event_update', {'id': event.id}) }}" class="btn btn-secondary">Modifier</a>
-                            <form action="{{ path('event_delete', {'id': event.id}) }}" method="post" style="display:inline;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
-                                <button class="btn btn-danger">Supprimer</button>
-                            </form>
-                        {% endif %}
-                    </td>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Places restantes</th>
+                    <th>Créateur</th>
+                    <th>Action</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for event in pagination.items %}
+                    <tr>
+                        <td>{{ event.title }}</td>
+                        <td>{{ event.description }}</td>
+                        <td>{{ event.date|date('Y-m-d H:i') }}</td>
+                        <td>{{ event.maxParticipants - event.participants|length }}</td>
+                        <td>{{ event.owner.prenom }} {{ event.owner.nom }}</td>
+                        <td>
+                            {% if is_granted('ROLE_USER') %}
+                                {% if event.participants.contains(app.user) %}
+                                    <form action="{{ path('event_unregister', {'id': event.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('unregister' ~ event.id) }}">
+                                        <button class="btn btn-dark btn-block">Se désinscrire</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ path('event_register', {'id': event.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('register' ~ event.id) }}">
+                                        <button class="btn btn-light btn-block">S'inscrire</button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if event.owner == app.user %}
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <a href="{{ path('event_update', {'id': event.id}) }}" class="btn btn-secondary mr-2"><i class="bi bi-pencil"></i></a>
+                                        <form action="{{ path('event_delete', {'id': event.id}) }}" method="post">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                            <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <nav aria-label="Page navigation example">
+            <div class="pagination">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </nav>
+        
+    </div>
 {% endblock %}

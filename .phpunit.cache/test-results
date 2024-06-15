@@ -1,0 +1,1 @@
+{"version":1,"defects":{"App\\Tests\\EventControllerTest::testCreateEvent":5,"App\\Tests\\EventControllerTest::testSomething":5},"times":{"App\\Tests\\EventControllerTest::testCreateEvent":6.299,"App\\Tests\\EventControllerTest::testSomething":13.962}}

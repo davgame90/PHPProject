@@ -12,7 +12,7 @@ use Doctrine\Common\Collections\Collection;
 class Event
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private $id;
 
@@ -34,7 +34,6 @@ class Event
     private $maxParticipants;
 
     #[ORM\Column(type: "boolean")]
-    #[Assert\NotBlank(message: "Veuillez indiquer si l'événement est public")]
     private $isPublic;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]

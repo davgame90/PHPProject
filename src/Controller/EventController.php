@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
-
+use Knp\Component\Pager\PaginatorInterface;
 
 class EventController extends AbstractController
 {
@@ -36,16 +36,22 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/list-events', name: 'event_list')]
-    public function list(EventRepository $eventRepository): Response
+    #[Route('/events', name: 'event_list')]
+    public function listEvents(EventRepository $eventRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $events = $eventRepository->findByIsPublic(true);
+        $queryBuilder = $eventRepository->createQueryBuilder('e'); // Créez une QueryBuilder ou utilisez une méthode personnalisée du repository
+
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1), // Numéro de page
+            2 // Nombre d'éléments par page
+        );
 
         return $this->render('event/list.html.twig', [
-            'events' => $events,
+            'pagination' => $pagination,
         ]);
     }
-
+    
     #[Route('/registrations', name: 'event_registrations')]
     public function registrations(EntityManagerInterface $entityManager): Response
     {
@@ -101,7 +107,7 @@ class EventController extends AbstractController
 
             $email = (new Email())
                 ->from('monnier.david15@gmail.com')
-                ->to("monnier.david15@gmail.com")
+                ->to($user->getUserIdentifier())
                 ->subject('Inscription à l\'événement')
                 ->text(sprintf('Vous êtes inscrit à l\'événement "%s" prévu le %s.', $event->getTitle(), $event->getDate()->format('Y-m-d H:i')));
 
@@ -122,13 +128,12 @@ class EventController extends AbstractController
             // Send unregistration email
             $email = (new Email())
                 ->from('monnier.david15@gmail.com')
-                ->to("monnier.david15@gmail.com")
+                ->to($user->getUserIdentifier())
                 ->subject('Désinscription de l\'événement')
                 ->text(sprintf('Vous êtes désinscrit de l\'événement "%s" prévu le %s.', $event->getTitle(), $event->getDate()->format('Y-m-d H:i')));
 
             $mailer->send($email);
         }
-
         return $this->redirectToRoute('event_list');
     }
 }

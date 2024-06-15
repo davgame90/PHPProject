@@ -6,6 +6,7 @@ use App\Entity\Event;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\User;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -17,7 +18,7 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
-        /**
+    /**
      * @return Event[] Returns an array of Event objects
      */
     public function findByParticipant(User $user): array
@@ -29,5 +30,28 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    
+
+    /**
+     * @return Event[] Returns an array of Event objects that are public
+     */
+    public function findByIsPublic(bool $isPublic): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.isPublic = :val')
+            ->setParameter('val', $isPublic)
+            ->leftJoin('e.owner', 'o')
+            ->addSelect('o')
+            ->getQuery()
+            ->getResult();
+    }
+
+        /**
+     * @return \Doctrine\ORM\Query Returns a Doctrine Query object
+     */
+    public function findAllQuery()
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.date', 'DESC')
+            ->getQuery();
+    }
 }

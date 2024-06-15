@@ -37,13 +37,17 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options' => ['constraints' => [
+                'first_options' => [
+                    'label' => 'Tapez votre nouveau mot de passe',
+                    'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 8]),
                     new Regex('/\d/', 'Le mot de passe doit contenir au moins un chiffre'),
                     new Regex('/[a-zA-Z]/', 'Le mot de passe doit contenir au moins une lettre'),
                 ]],
-                'second_options' => ['constraints' => [
+                'second_options' => [
+                    'label' => 'Confirmez votre nouveau mot de passe',
+                    'constraints' => [
                     new NotBlank(),
                 ]],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
